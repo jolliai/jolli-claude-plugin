@@ -1,0 +1,26 @@
+# Jolli Claude Code plugin marketplace
+#
+# Policy: only the plugin-distribution files belong on the remote.
+# This is an allowlist — ignore everything at the repo root by default,
+# then re-include the handful of files/dirs the marketplace actually ships.
+#
+# Anything not re-included below is local/dev-only and stays out of git:
+#   .claude/   local settings + locally-installed skill copies
+#   .agents/   installed skill copies for other agent runtimes
+#   .gemini/   Gemini config
+#   .jolli/    jolli runtime state (debug.log, sessions.json)
+#   /.mcp.json dev MCP config with a machine-specific absolute path
+
+# 1. Ignore every top-level entry.
+/*
+
+# 2. Re-include the marketplace essentials.
+#    The `/**` forms re-include nested files too, so a machine-global
+#    pattern (e.g. a bare `SKILL.md`) can't silently drop new plugin files.
+!/.gitignore
+!/.claude-plugin/
+!/.claude-plugin/**
+!/plugins/
+!/plugins/**
+!/README.md
+!/LICENSE
