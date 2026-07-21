@@ -1,8 +1,8 @@
 # Jolli Memory — Claude Code plugin
 
-Jolli Memory's Claude Code integration — MCP tools, `/jolli:*` skills and
-commands, a PR-writer subagent, and session hooks — packaged as a single
-installable Claude Code plugin.
+Jolli Memory's Claude Code integration — MCP tools, a bare `/jolli` menu plus
+`/jolli:*` skills and commands, a PR-writer subagent, and session hooks —
+packaged as a single installable Claude Code plugin.
 
 Jolli builds a durable memory of your work from your git commits and lets you
 recall it, search past decisions, and generate memory-rich PR descriptions —
@@ -26,15 +26,16 @@ hooks are what generate the memory that the plugin surfaces let you consume.
 
 ## Installation
 
-> **Not yet published.** Until it ships, you can build and run it locally — see
-> [DEVELOPMENT.md](DEVELOPMENT.md).
-
-Once published, install from Jolli's Claude Code marketplace:
+Install from Jolli's Claude Code marketplace:
 
 ```
-/plugin marketplace add <jolli-marketplace>
+/plugin marketplace add jolliai/jolli-claude-plugin
 /plugin install jolli@jolli-marketplace
 ```
+
+`jolliai/jolli-claude-plugin` is the marketplace repo (its `marketplace.json`
+names the marketplace `jolli-marketplace`, which is why the install target is
+`jolli@jolli-marketplace`).
 
 In the **desktop app**, use **+ → Plugins → Add marketplace** with the same
 source, then enable **Jolli Memory** under **Manage plugins**.
@@ -76,10 +77,4 @@ VS Code extension already have. Claude Code fetches the plugin package itself, s
 
 ## License
 
-Apache-2.0. See [LICENSE](../LICENSE).
-
----
-
-Building, local testing (including loading the plugin from a local directory),
-distribution, versioning, and release notes live in
-[DEVELOPMENT.md](DEVELOPMENT.md).
+Apache-2.0. See [LICENSE](LICENSE).
