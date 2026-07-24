@@ -25,7 +25,7 @@ If the `status` MCP tool is unavailable (an older Jolli), fall back to the
 bundled CLI through its stable dispatch script and read its output:
 
 ```bash
-JOLLI_DIST_PREFER_SOURCE=claude-plugin "$HOME/.jolli/jollimemory/run-cli" status
+"$HOME/.jolli/jollimemory/run-cli" status
 ```
 
 If `run-cli` does not exist, the plugin's session bootstrap has not run yet — ask
@@ -34,27 +34,36 @@ re-run `/jolli:init`.
 
 ## Step 2: Sign in (only if needed)
 
-Binding to a Space and generating memories require a credential. If Step 1 shows
-the user is **not** signed in AND has no Jolli/Anthropic key, run the login flow
-now (it opens the browser and waits on a loopback callback):
+**Memory generation itself needs no sign-in** — the plugin defaults to the
+`local-agent` provider, generating summaries through the user's local Claude
+subscription. Signing in is required only to **bind and share a Space** (Step 4),
+and Space binding authenticates with a **Jolli** credential specifically (a Jolli
+sign-in or a Jolli API key); an Anthropic key does nothing for it. So run the
+login flow now whenever Step 1 shows the user is **not** signed in AND has **no
+Jolli API key** (`account.jolliApiKeyConfigured` is false) — regardless of whether
+an Anthropic key is present, since an Anthropic key can't bind a Space. If they
+already have a Jolli sign-in or a Jolli API key, skip this step. The login flow
+opens the browser and waits on a loopback callback:
 
 ```bash
-JOLLI_DIST_PREFER_SOURCE=claude-plugin "$HOME/.jolli/jollimemory/run-cli" auth login
+"$HOME/.jolli/jollimemory/run-cli" auth login
 ```
 
 This is interactive and can take up to a minute — wait for it to return, do not
 background it. Never ask the user for passwords, tokens, or callback URLs. If it
-fails, surface the reason and stop (the later steps need auth). If the user was
-already signed in, skip this step.
+fails, surface the reason and stop (the later steps need auth). If the user
+already has a Jolli sign-in or a Jolli API key, skip this step.
 
 ## Step 3: Enable memory generation for this repo
 
 Install Jolli's git hooks into the active repo (idempotent — safe to re-run; the
-plugin's SessionStart also does this, so it is usually already done). Silent on
-success:
+plugin's SessionStart also does this, so it is usually already done). The plugin's
+SessionStart also seeds the AI provider to `local-agent` (local Claude
+subscription) when the user has made no explicit choice, so generation works with
+no API key. Silent on success:
 
 ```bash
-JOLLI_DIST_PREFER_SOURCE=claude-plugin "$HOME/.jolli/jollimemory/run-cli" enable --git-hooks-only --source-tag claude-plugin
+"$HOME/.jolli/jollimemory/run-cli" enable --repo-hooks-only --source-tag claude-plugin
 ```
 
 ## Step 4: Bind the repo to a Jolli Space
@@ -77,7 +86,7 @@ JOLLI_DIST_PREFER_SOURCE=claude-plugin "$HOME/.jolli/jollimemory/run-cli" enable
 from that list (never free-typed text):
 
 ```bash
-JOLLI_DIST_PREFER_SOURCE=claude-plugin "$HOME/.jolli/jollimemory/run-cli" bind --space <id|slug> --format json
+"$HOME/.jolli/jollimemory/run-cli" bind --space <id|slug> --format json
 ```
 
 Handle the JSON `type`: `bound` → success; `already_bound` → already set up;
@@ -85,7 +94,9 @@ Handle the JSON `type`: `bound` → success; `already_bound` → already set up;
 
 ## Step 5: Report and hand off
 
-Summarize what happened: signed in (or already were), memory generation enabled,
-and the Space now bound (name + id). Then tell the user that once they commit
-work, they can publish this branch's memories with `/jolli:push`, and recall
-prior context with `/jolli:recall`.
+Summarize what happened: signed in (or already were), memory generation enabled
+(running locally via the Claude subscription — no API key), and the Space now
+bound (name + id). Then reassure the user they are all set:
+from here on a normal **commit & `git push`** automatically publishes this
+branch's memories to the bound Space for teammates — the pre-push hook does it,
+nothing extra to run. They can recall prior context anytime with `/jolli:recall`.

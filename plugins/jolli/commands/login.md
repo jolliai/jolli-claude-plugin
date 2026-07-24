@@ -1,13 +1,18 @@
 ---
-description: Sign in to Jolli so memory generation works without an Anthropic API key. Opens your browser to complete login.
+description: Sign in to Jolli to share this repo's memories to a Space. Opens your browser to complete login. (Memory generation itself runs locally and needs no sign-in.)
 ---
 
 # Jolli Login
 
-Sign the user in to Jolli. Logging in saves a **Jolli API Key** that powers AI
-summary generation through Jolli's backend — so the user does **not** need an
-Anthropic API key. This is the recommended way to enable memory generation for
-a Claude Code plugin install.
+Sign the user in to Jolli. Signing in saves the credentials Jolli needs to **bind
+this repo to a Space and share memories** with teammates (a `git push` then
+auto-publishes the branch's memories to the bound Space).
+
+**Memory generation does not require signing in.** By default the Claude Code
+plugin generates memories locally through your existing Claude subscription (the
+`local-agent` provider) — no Anthropic API key and no Jolli account needed.
+Signing in is about sharing to a Space, and it does **not** change that: after
+login, summaries still run locally.
 
 ## Step 1: Run the login flow
 
@@ -17,7 +22,7 @@ Jolli login page and waits on a local loopback callback while the user completes
 sign-in:
 
 ```bash
-JOLLI_DIST_PREFER_SOURCE=claude-plugin "$HOME/.jolli/jollimemory/run-cli" auth login
+"$HOME/.jolli/jollimemory/run-cli" auth login
 ```
 
 This is interactive and can take up to a minute. Wait for it to return — do not
@@ -31,13 +36,17 @@ then try `/jolli:login` again.
 ## Step 2: Report the outcome
 
 - **Success** — the CLI prints `Signed in successfully!` with `Auth token: saved`
-  and `Jolli API Key: saved`. Tell the user memory generation is now enabled and
-  that no Anthropic API key is needed. New commits will start producing memories.
+  and `Jolli API Key: saved`. Tell the user they can now bind this repo to a Jolli
+  Space (`/jolli:init`) and share memories on push. Note that memory generation
+  keeps running locally through their Claude subscription — logging in did not
+  change the summary engine.
 - **Failure** — the CLI prints `Login failed: <reason>`. Surface the reason and
   suggest retrying `/jolli:login`. If the browser did not open, tell the user the
   CLI also printed a login URL they can open manually.
 
-## Note: no Anthropic key required
+## Note: no key required to generate memories
 
-Jolli login is the default path. An Anthropic API key is only an alternative for
-users who do not want a Jolli account — it is not needed once signed in to Jolli.
+Memory generation works out of the box via the local Claude subscription — no
+Anthropic API key, no Jolli sign-in. Sign in only when you want to share memories
+to a Jolli Space, or bring your own Anthropic / Jolli key if you'd rather not use
+the local subscription for summaries.
